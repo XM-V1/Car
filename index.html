@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Car Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        var scene, camera, renderer, car, carSpeed = 0.1, carRotation = 0;
+        
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            
+            // Create the car (using a simple box for now)
+            var carGeometry = new THREE.BoxGeometry(1, 0.5, 2);
+            var carMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            car = new THREE.Mesh(carGeometry, carMaterial);
+            car.position.y = 0.25;
+            scene.add(car);
+            
+            // Create the road (simple plane)
+            var roadGeometry = new THREE.PlaneGeometry(500, 500);
+            var roadMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, side: THREE.DoubleSide });
+            var road = new THREE.Mesh(roadGeometry, roadMaterial);
+            road.rotation.x = - Math.PI / 2;
+            scene.add(road);
+
+            camera.position.z = 5;
+
+            // Render the scene
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Move car forward/backward with keys
+            if (carSpeed > 0) {
+                car.position.z -= carSpeed;
+            }
+            
+            // Move car rotation
+            if (carRotation !== 0) {
+                car.rotation.y += carRotation;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Event listener for key press (Arrow keys to move the car)
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowUp') {
+                carSpeed += 0.05;
+            } else if (event.key === 'ArrowDown') {
+                carSpeed = Math.max(0, carSpeed - 0.05);
+            } else if (event.key === 'ArrowLeft') {
+                carRotation = 0.05;
+            } else if (event.key === 'ArrowRight') {
+                carRotation = -0.05;
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
